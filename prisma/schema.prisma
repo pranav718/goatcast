@@ -19,7 +19,6 @@ model Podcast {
   title       String 
   description String
   thumbnail   String
-  spotifyUrl  String
   genre       Genre   @relation(fields: [genreId], references: [id])
   genreId     String    @db.ObjectId
 }
