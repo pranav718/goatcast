@@ -19,6 +19,9 @@ model Podcast {
   title       String 
   description String
   thumbnail   String
-  genre       Genre   @relation(fields: [genreId], references: [id])
+  youtubeUrl  String?
+  genre       Genre     @relation(fields: [genreId], references: [id])
   genreId     String    @db.ObjectId
+  isApproved  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
 }
