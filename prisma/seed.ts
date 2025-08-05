@@ -3,6 +3,9 @@ const prisma = new PrismaClient();
 
 async function main() {
 
+  await prisma.podcast.deleteMany({});
+  await prisma.genre.deleteMany({});
+
   const tech = await prisma.genre.create({
     data: {
       name: "Technology",
@@ -10,24 +13,17 @@ async function main() {
       podcasts: {
         create: [
           {
-            title: "Lex Fridman Podcast",
-            description: "Conversations about AI, science, technology, history, philosophy and the nature of intelligence.",
-            thumbnail: "https://i.ytimg.com/vi/TjQoHnL2s84/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@lexfridman",
+            title: "DHH",
+            description: "Future of programming,ai,etc.",
+            thumbnail: "https://img.youtube.com/vi/vagyIcmIGOQ/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/vagyIcmIGOQ?si=aOR3CXv6RQAsCAxI",
             isApproved: true,
           },
           {
-            title: "Fireship",
-            description: "High-intensity code tutorials and tech news.",
-            thumbnail: "https://i.ytimg.com/vi/Mus_vwhTCq0/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@Fireship",
-            isApproved: true,
-          },
-          {
-            title: "ThePrimeagen",
-            description: "Programming, vim, and developer productivity.",
-            thumbnail: "https://i.ytimg.com/vi/9-cyC6O81Bk/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@ThePrimeagen",
+            title: "Primeagen",
+            description: "Programming, AI, ADHD, Productivity, Addiction and God.",
+            thumbnail: "https://img.youtube.com/vi/tNZnLkRBYA8/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/tNZnLkRBYA8?si=3Sn8W_6HUxZzYzHb",
             isApproved: true,
           },
         ],
@@ -42,17 +38,17 @@ async function main() {
       podcasts: {
         create: [
           {
-            title: "My First Million",
+            title: "Mark Zuckerberg",
             description: "Business ideas, trends, and entrepreneurship stories.",
-            thumbnail: "https://i.ytimg.com/vi/LT_DNuYDlQE/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@myfirstmillion",
+            thumbnail: "https://img.youtube.com/vi/7k1ehaE0bdU/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/7k1ehaE0bdU?si=wf0BqGaQvkM-Tsrp",
             isApproved: true,
           },
           {
-            title: "Colin and Samir",
-            description: "The business of being a creator.",
-            thumbnail: "https://i.ytimg.com/vi/TQCKhRv72wc/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@ColinandSamir",
+            title: "Jeff Bezos",
+            description: "Amazon and Blue Origin.",
+            thumbnail: "https://img.youtube.com/vi/DcWqzZ3I2cY/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/DcWqzZ3I2cY?si=y8eACjsgOcT8vGG7",
             isApproved: true,
           },
         ],
@@ -67,17 +63,17 @@ async function main() {
       podcasts: {
         create: [
           {
-            title: "Hamza",
-            description: "Self-improvement for young men.",
-            thumbnail: "https://i.ytimg.com/vi/8AuXt8M_Pjo/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@Hamza97",
+            title: "David Goggins",
+            description: "One of the best podcast of David Goggins",
+            thumbnail: "https://i.ytimg.com/vi/5tSTk1083VY/sddefault.jpg",
+            youtubeUrl: "https://www.youtube.com/live/5tSTk1083VY?si=wWU2HKFXfjdub-bo",
             isApproved: true,
           },
           {
             title: "Jordan Peterson",
             description: "Psychology, philosophy, and life advice.",
-            thumbnail: "https://i.ytimg.com/vi/kYYJlNbV1OM/maxresdefault.jpg",
-            youtubeUrl: "https://www.youtube.com/@JordanBPeterson",
+            thumbnail: "https://img.youtube.com/vi/WEP5ubPMGDU/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/WEP5ubPMGDU?si=18XjVGxtzi6IkEV1",
             isApproved: true,
           },
         ],
