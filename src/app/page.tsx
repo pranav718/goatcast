@@ -1,27 +1,45 @@
-import PodcastCard from "./components/PodcastCard";
-import prisma from "./lib/prisma"
+import prisma from './lib/prisma';
+import GenreSection from './components/GenreSection';
+import Link from 'next/link';
 
-export default async function Home() {
-  const podcasts = await prisma.podcast.findMany({
-    where: {
-      isApproved: true
+async function getGenresWithPodcasts() {
+  return await prisma.genre.findMany({
+    include: {
+      podcasts: {
+        where: { isApproved: true },
+        orderBy: { createdAt: 'desc' }
+      }
     }
   });
+}
+
+export default async function HomePage() {
+  const genres = await getGenresWithPodcasts();
 
   return (
-    <div className="p-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {podcasts.map((podcast) => (
-          <PodcastCard
-            key={podcast.id}
-            id={podcast.id}
-            title={podcast.title}
-            thumbnail={podcast.thumbnail}
-            youtubeUrl={podcast.youtubeUrl || undefined}
-          />
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900">GoatCast</h1>
+              <p className="text-gray-600 mt-1">Collection of podcasts that are just goated</p>
+            </div>
+            <Link 
+              href="/request"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
+            >
+              Request Podcast
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {genres.map((genre) => (
+          <GenreSection key={genre.id} genre={genre} />
         ))}
-      </div>
+      </main>
     </div>
   );
-
 }
