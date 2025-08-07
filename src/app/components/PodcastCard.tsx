@@ -10,8 +10,10 @@ interface PodcastCardProps {
 export default function PodcastCard({ id, title, thumbnail, youtubeUrl }: PodcastCardProps){
     const handleClick = () => {
         if(youtubeUrl){
-            window.open(youtubeUrl, '_blank');
-        }
+       
+        const url = youtubeUrl.startsWith('http') ? youtubeUrl : `https://${youtubeUrl}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+    }
     };
 
     return <div 
