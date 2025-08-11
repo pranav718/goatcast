@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from './lib/prisma';
 import { google } from 'googleapis';
+import { error } from 'console';
 
 const youtube = google.youtube({
     version: 'v3',
@@ -67,5 +68,41 @@ export async function POST(request: NextRequest){
         
     } catch (error) {
         console.error('Error extracting IP:', error);
+    }
+
+    const {genre, youtubeUrl, description} = await request.json();
+
+    if(!genre || youtubeUrl) {
+        return NextResponse.json(
+            {error: "Genre and youtube url are required"},
+            {status: 400}
+        )
+    }
+
+    if(!youtubeUrl.includes('youtube.com') && !youtubeUrl.includes('youtu.be')){
+        return NextResponse.json(
+            {error: "please provide a valid youtube url"},
+            {status: 400}
+        )
+    }
+
+    let videoData;
+    let channelData;
+
+    const videoId = extractVideoId(youtubeUrl);
+
+    if(videoId){
+        try{
+            const videoResponse = await youtube.videos.list({
+                part: ['snippet'],
+                id: [videoId],
+            })
+        }catch(error){
+            console.error("yutube api error", error);
+            return NextResponse.json(
+                {error: "failed to fetch video information from youtube :("},
+                {status: 500}
+            );
+        }
     }
 }
