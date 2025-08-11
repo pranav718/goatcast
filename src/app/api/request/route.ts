@@ -53,132 +53,189 @@ function getRateLimit(ip: string): boolean{
     return true;
 }
 
-export async function POST(request: NextRequest){
+export async function POST(request: NextRequest) {
+  try {
+
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0].trim() : 
+              request.headers.get('x-real-ip') || 
+              'unknown';
     
-    try {
-        const forwarded = request.headers.get('x-forwarded-for');
-        const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
-        
-        if(!getRateLimit(ip)){
-            return NextResponse.json(
-                {error: "please wait 15 seconds before submitting again."},
-                {status: 429}
-            )
-        }
-        
-    } catch (error) {
-        console.error('Error extracting IP:', error);
+    if (!getRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please wait 5 minutes before submitting again.' },
+        { status: 429 }
+      );
     }
 
-    const {genre, youtubeUrl, description} = await request.json();
+    const { genre, youtubeUrl, description } = await request.json();
 
-    if(!genre || youtubeUrl) {
-        return NextResponse.json(
-            {error: "Genre and youtube url are required"},
-            {status: 400}
-        )
+    if (!genre || !youtubeUrl) {
+      return NextResponse.json(
+        { error: 'Genre and YouTube URL are required' },
+        { status: 400 }
+      );
     }
 
-    if(!youtubeUrl.includes('youtube.com') && !youtubeUrl.includes('youtu.be')){
-        return NextResponse.json(
-            {error: "please provide a valid youtube url"},
-            {status: 400}
-        )
+    if (!youtubeUrl.includes('youtube.com') && !youtubeUrl.includes('youtu.be')) {
+      return NextResponse.json(
+        { error: 'Please provide a valid YouTube URL' },
+        { status: 400 }
+      );
     }
 
     let videoData;
     let channelData;
 
     const videoId = extractVideoId(youtubeUrl);
+    
+    if (videoId) {
+      try {
+        const videoResponse = await youtube.videos.list({
+          part: ['snippet'],
+          id: [videoId],
+        });
 
-    if(videoId){
-        // its a video url!!!!
-        try{
-            const videoResponse = await youtube.videos.list({
-                part: ['snippet'],
-                id: [videoId],
-            })
-
-            if(!videoResponse.data.items || videoResponse.data.items.length === 0){
-                return NextResponse.json(
-                    {error: "video not found or may be private :("},
-                    {status: 404}
-                )
-            }
-
-            videoData = videoResponse.data.items[0].snippet;
-
-            const channelResponse = await youtube.channels.list({
-                part: ['snippet'],
-                id:[videoData!.channelId!]
-            })
-
-            channelData = channelResponse.data.items?.[0]?.snippet;
-
-
-        }catch(error){
-            console.error("yutube api error", error);
-            return NextResponse.json(
-                {error: "failed to fetch video information from youtube :("},
-                {status: 500}
-            );
-        }
-    }else{
-        // its a  channel url!!!
-
-        const channelHandle = extractChannelHandle(youtubeUrl);
-
-        if(!channelHandle){
-            return NextResponse.json(
-                {error: "invalid url format"},
-                {status: 400}
-            );
+        if (!videoResponse.data.items || videoResponse.data.items.length === 0) {
+          return NextResponse.json(
+            { error: 'Video not found or private' },
+            { status: 404 }
+          );
         }
 
-        try{
-            let channelResponse;
-
-            if(channelHandle.startsWith('UC') || channelHandle.length === 24){
-                // its a channel id
-                channelResponse = await youtube.channels.list({
-                    part:['snippet'],
-                    id:[channelHandle]
-                });
-            }else{
-                const searchResponse = await youtube.search.list({
-                part: ['snippet'],
-                q: channelHandle,
-                type: ['channel'],
-                maxResults: 1,
-                    });
-          
-                if (searchResponse.data.items && searchResponse.data.items.length > 0) {
-                    const channelId = searchResponse.data.items[0].snippet?.channelId;
-                    if (channelId) {
-                        channelResponse = await youtube.channels.list({
-                            part: ['snippet'],
-                            id: [channelId],
-                        });
-                    }
-                }
-            }
-            if (!channelResponse?.data.items || channelResponse.data.items.length === 0) {
-                return NextResponse.json(
-                    { error: 'Channel not found' },
-                    { status: 404 }
-                );
-            }
-
-            channelData = channelResponse.data.items[0].snippet;
-
-        }
-        catch(error){
-            console.error('YouTube API error:', error);
-            return NextResponse.json(
-                { error: 'Failed to fetch channel information from YouTube' },
-                { status: 500 }
-            );
-        }
+        videoData = videoResponse.data.items[0].snippet;
         
+        const channelResponse = await youtube.channels.list({
+          part: ['snippet'],
+          id: [videoData!.channelId!],
+        });
+        
+        channelData = channelResponse.data.items?.[0]?.snippet;
+      } catch (error) {
+        console.error('YouTube API error:', error);
+        return NextResponse.json(
+          { error: 'Failed to fetch video information from YouTube' },
+          { status: 500 }
+        );
+      }
+    } else {
+
+      const channelHandle = extractChannelHandle(youtubeUrl);
+      
+      if (!channelHandle) {
+        return NextResponse.json(
+          { error: 'Invalid YouTube URL format' },
+          { status: 400 }
+        );
+      }
+
+      try {
+        let channelResponse;
+        
+        if (channelHandle.startsWith('UC') || channelHandle.length === 24) {
+          channelResponse = await youtube.channels.list({
+            part: ['snippet'],
+            id: [channelHandle],
+          });
+        } 
+        else {
+
+          const searchResponse = await youtube.search.list({
+            part: ['snippet'],
+            q: channelHandle,
+            type: ['channel'],
+            maxResults: 1,
+          });
+          
+          if (searchResponse.data.items && searchResponse.data.items.length > 0) {
+            const channelId = searchResponse.data.items[0].snippet?.channelId;
+            if (channelId) {
+              channelResponse = await youtube.channels.list({
+                part: ['snippet'],
+                id: [channelId],
+              });
+            }
+          }
+        }
+
+        if (!channelResponse?.data.items || channelResponse.data.items.length === 0) {
+          return NextResponse.json(
+            { error: 'Channel not found' },
+            { status: 404 }
+          );
+        }
+
+        channelData = channelResponse.data.items[0].snippet;
+      } catch (error) {
+        console.error('YouTube API error:', error);
+        return NextResponse.json(
+          { error: 'Failed to fetch channel information from YouTube' },
+          { status: 500 }
+        );
+      }
     }
+
+    const title = videoData?.title || channelData?.title || 'Unknown Podcast';
+    const thumbnail = videoData?.thumbnails?.maxres?.url || 
+                     videoData?.thumbnails?.high?.url ||
+                     channelData?.thumbnails?.high?.url ||
+                     channelData?.thumbnails?.default?.url ||
+                     'https://via.placeholder.com/480x360';
+
+
+    let genreRecord = await prisma.genre.findUnique({
+      where: { slug: genre }
+    });
+
+    if (!genreRecord) {
+      const genreName = genre.split('-').map((word: string) => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+      
+      genreRecord = await prisma.genre.create({
+        data: {
+          name: genreName,
+          slug: genre
+        }
+      });
+    }
+
+    const existingPodcast = await prisma.podcast.findFirst({
+      where: {
+        youtubeUrl: youtubeUrl,
+      }
+    });
+
+    if (existingPodcast) {
+      return NextResponse.json(
+        { error: 'This podcast has already been submitted' },
+        { status: 409 }
+      );
+    }
+
+    await prisma.podcast.create({
+      data: {
+        title,
+        description: description || videoData?.description?.substring(0, 500) || channelData?.description?.substring(0, 500) || 'No description available',
+        thumbnail,
+        youtubeUrl,
+        genreId: genreRecord.id,
+        isApproved: false, 
+      }
+    });
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'Podcast added successfully!',
+      title 
+    });
+
+  } catch (error) {
+    
+    console.error('Error creating podcast request:', error);
+    return NextResponse.json(
+      { error: 'Something went wrong. Please try again.' },
+      { status: 500 }
+    );
+  }
 }
