@@ -92,11 +92,30 @@ export async function POST(request: NextRequest){
     const videoId = extractVideoId(youtubeUrl);
 
     if(videoId){
+        // its a video url!!!!
         try{
             const videoResponse = await youtube.videos.list({
                 part: ['snippet'],
                 id: [videoId],
             })
+
+            if(!videoResponse.data.items || videoResponse.data.items.length === 0){
+                return NextResponse.json(
+                    {error: "video not found or may be private :("},
+                    {status: 404}
+                )
+            }
+
+            videoData = videoResponse.data.items[0].snippet;
+
+            const channelResponse = await youtube.channels.list({
+                part: ['snippet'],
+                id:[videoData!.channelId!]
+            })
+
+            channelData = channelResponse.data.items?.[0]?.snippet;
+
+
         }catch(error){
             console.error("yutube api error", error);
             return NextResponse.json(
@@ -104,5 +123,62 @@ export async function POST(request: NextRequest){
                 {status: 500}
             );
         }
+    }else{
+        // its a  channel url!!!
+
+        const channelHandle = extractChannelHandle(youtubeUrl);
+
+        if(!channelHandle){
+            return NextResponse.json(
+                {error: "invalid url format"},
+                {status: 400}
+            );
+        }
+
+        try{
+            let channelResponse;
+
+            if(channelHandle.startsWith('UC') || channelHandle.length === 24){
+                // its a channel id
+                channelResponse = await youtube.channels.list({
+                    part:['snippet'],
+                    id:[channelHandle]
+                });
+            }else{
+                const searchResponse = await youtube.search.list({
+                part: ['snippet'],
+                q: channelHandle,
+                type: ['channel'],
+                maxResults: 1,
+                    });
+          
+                if (searchResponse.data.items && searchResponse.data.items.length > 0) {
+                    const channelId = searchResponse.data.items[0].snippet?.channelId;
+                    if (channelId) {
+                        channelResponse = await youtube.channels.list({
+                            part: ['snippet'],
+                            id: [channelId],
+                        });
+                    }
+                }
+            }
+            if (!channelResponse?.data.items || channelResponse.data.items.length === 0) {
+                return NextResponse.json(
+                    { error: 'Channel not found' },
+                    { status: 404 }
+                );
+            }
+
+            channelData = channelResponse.data.items[0].snippet;
+
+        }
+        catch(error){
+            console.error('YouTube API error:', error);
+            return NextResponse.json(
+                { error: 'Failed to fetch channel information from YouTube' },
+                { status: 500 }
+            );
+        }
+        
     }
 }
