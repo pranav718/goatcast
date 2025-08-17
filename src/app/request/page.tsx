@@ -4,11 +4,13 @@ import Link from 'next/link';
 
 export default function RequestPage() {
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
+        setMessage(null);
 
         const formData = new FormData(event.currentTarget);
         const data = {
@@ -18,20 +20,33 @@ export default function RequestPage() {
         }
 
         try{
-            const response = await fetch('/api/podcasts/request', {
+            const response = await fetch('/api/request', {
                 method: 'POST',
                 headers: { 'Content-Type': '/application/json'},
                 body: JSON.stringify(data)
             });
 
+            const result = await response.json();
+
             if(response.ok){
-                setSuccess(true);
-                (event.target as HTMLFormElement).reset();
+              setMessage({
+                type: 'success',
+                text: `${result.title} has been added sucesfully`
+              });
+              (event.target as HTMLFormElement).reset();
+            }else{
+              setMessage({
+                type: 'error',
+                text: result.error || 'somethingg went wrong'
+              });
             }
 
         }
         catch(error){
-            console.error("Error: ", error);
+          setMessage({
+            type: 'error',
+            text: "network error. kindly check your connection"
+          });
         }
         finally{
             setLoading(false);
@@ -63,11 +78,7 @@ export default function RequestPage() {
 
         <main className='max-w-2xl mx-auto px-4 py-8'>
     <div className='bg-white rounded-lg shadow-md p-8'>
-        {success && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <p className="text-green-800">Thanks for the suggestion! We'll review it soon.</p>
-            </div>
-        )}
+
 
              <form onSubmit={handleSubmit} className="space-y-6">
             <div>
