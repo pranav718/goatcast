@@ -55,32 +55,37 @@ export default function RequestPage() {
     };
 
     return (
-        <div className='min-h-screen bg-gray-50'>
+<div className="min-h-screen bg-[#fafafa]">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-8 py-6">
+          <Link href="/" className="text-gray-600 hover:text-gray-800 font-medium text-sm">
+            ← Back to GoatCast
+          </Link>
+        </div>
+      </header>
 
-        <header className='bg-white border-b border-gray-200'>
-            <div className='max-w-5xl mx-auto px-8 py-8'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-medium text-gray-900 mb-2">Request a Podcast</h1>
-                        <p className="text-gray-600 text-sm font-light">
-                            Suggest some goated podcasts :D
-                        </p>
-                    </div>
-                    <Link 
-                        href="/"
-                        className="bg-gray-800 text-white px-4 py-2 text-sm font-medium border border-gray-800 hover:bg-gray-700 transition-colors"
-                    >
-                        ← Go back
-                    </Link>
-                </div>
+      {/* Form */}
+      <main className="max-w-2xl mx-auto px-8 py-12">
+        <div className="bg-white border border-gray-200 p-8">
+          <h1 className="text-2xl font-medium text-gray-900 mb-2">Request a Podcast</h1>
+          <p className="text-gray-600 text-sm mb-8">
+            Submit a youtube podcast video and we'll automatically fetch the details.
+            <br />
+            
+          </p>
+
+          {message && (
+            <div className={`border p-4 mb-6 text-sm ${
+              message.type === 'success' 
+                ? 'bg-green-50 border-green-200 text-green-800' 
+                : 'bg-red-50 border-red-200 text-red-800'
+            }`}>
+              {message.text}
             </div>
-        </header>
+          )}
 
-        <main className='max-w-2xl mx-auto px-4 py-8'>
-    <div className='bg-white rounded-lg shadow-md p-8'>
-
-
-             <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Genre
@@ -88,7 +93,7 @@ export default function RequestPage() {
               <select 
                 name="genre"
                 required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
               >
                 <option value="">Select a genre...</option>
                 <option value="technology">Technology</option>
@@ -96,48 +101,49 @@ export default function RequestPage() {
                 <option value="self-improvement">Self Improvement</option>
                 <option value="comedy">Comedy</option>
                 <option value="health">Health & Fitness</option>
+                <option value="education">Education</option>
+                <option value="news">News & Politics</option>
+                <option value="entertainment">Entertainment</option>
                 <option value="other">Other</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                YouTube Video URL
+                YouTube URL
               </label>
               <input
                 type="url"
                 name="youtubeUrl"
                 required
-                placeholder="paste video link"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="https://youtube.com/@channelname or video link"
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Why is this podcast goated? (Optional)
+                How is this podcast goated? (Optional)
               </label>
               <textarea
                 name="description"
-                rows={4}
-                placeholder="Tell us what makes this podcast special..."
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                rows={3}
+                placeholder="What do you find so special in this podcast?"
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50"
+              className="w-full bg-gray-800 text-white py-3 text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Submitting...' : 'Submit Request'}
+              {loading ? 'Fetching from YouTube...' : 'Submit Podcast'}
             </button>
           </form>
 
-            </div>
-        </main>
         </div>
-    )
-
-
+      </main>
+    </div>
+  );
 }
