@@ -56,7 +56,7 @@ export default function RequestPage() {
 
     return (
 <div className="min-h-screen bg-[#fafafa]">
-      {/* Header */}
+
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-8 py-6">
           <Link href="/" className="text-gray-600 hover:text-gray-800 font-medium text-sm">
@@ -65,7 +65,6 @@ export default function RequestPage() {
         </div>
       </header>
 
-      {/* Form */}
       <main className="max-w-2xl mx-auto px-8 py-12">
         <div className="bg-white border border-gray-200 p-8">
           <h1 className="text-2xl font-medium text-gray-900 mb-2">Request a Podcast</h1>
