@@ -1,13 +1,15 @@
 "use client"
 import { useState, useEffect } from "react";
-import { Podcast, Genre } from '@prisma/client'
+import { Podcast, Genre } from '@prisma/client';
+import Link from "next/link";
+
 
 type PodcastWithGenre = Podcast & {
     genre: Genre;
 };
 
 export default function AdminDashboard() {
-    const [podcasts, setPodcasts] = useState<Podcast[]>([]);
+    const [podcasts, setPodcasts] = useState<PodcastWithGenre[]>([]);
     const[loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -78,8 +80,86 @@ export default function AdminDashboard() {
     }
 
     return(
-        <div>
-            
+        <div className="min-h-screen bg-[#fafafa]">
+            <header className="bg-white border-b border-gray-200">
+                <div className="max-w-6xl mx-auto px-8 py-6">
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-2xl font-medium text-gray-900">Admin Dashboard</h1>
+                        <Link 
+                            href="/" 
+                            className="text-gray-600 hover:text-gray-800 font-medium text-sm"
+                        >
+                            ← Back to GoatCast
+                        </Link>
+                    </div>
+                </div>
+            </header>
+
+            <main className="max-w-6xl mx-auto px-8 py-12">
+                <h2 className="text-xl font-medium text-gray-800 mb-6">
+                    Pending Podcasts ({podcasts.length})
+                </h2>
+
+                {podcasts.length === 0 ? (
+                    <div className="bg-white border border-gray-200 p-8 text-center">
+                        <p className="text-gray-600">No pending podcasts to review.</p>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {podcasts.map((podcast) => (
+                            <div key={podcast.id} className="bg-white border border-gray-200 p-6">
+                                <div className="flex gap-6">
+                                    <img 
+                                        src={podcast.thumbnail} 
+                                        alt={podcast.title}
+                                        className="w-48 h-[27] object-cover"
+                                    />
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                            {podcast.title}
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mb-2">
+                                            {podcast.description}
+                                        </p>
+                                        <div className="flex gap-4 text-sm text-gray-500 mb-4">
+                                            <span>Genre: {podcast.genre.name}</span>
+                                            <span>•</span>
+                                            <a 
+                                                href={podcast.youtubeUrl ?? undefined} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                View on YouTube
+                                            </a>
+                                            <span>•</span>
+                                            <span>
+                                                Submitted: {new Date(podcast.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => handleApprove(podcast.id)}
+                                                disabled={processingId === podcast.id}
+                                                className="bg-green-600 text-white px-4 py-2 text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                                            >
+                                                {processingId === podcast.id ? 'Processing...' : 'Approve'}
+                                            </button>
+                                            <button
+                                                onClick={() => handleReject(podcast.id)}
+                                                disabled={processingId === podcast.id}
+                                                className="bg-red-600 text-white px-4 py-2 text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                                            >
+                                                Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </main>
         </div>
     )
 }

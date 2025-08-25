@@ -3,14 +3,15 @@ import prisma from '@/lib/prisma';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
+    const { id } = await params;
     const { isApproved } = body;
 
     const podcast = await prisma.podcast.update({
-      where: { id: params.id },
+      where: { id},
       data: { isApproved }
     });
 
