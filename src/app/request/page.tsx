@@ -31,7 +31,7 @@ export default function RequestPage() {
             if(response.ok){
               setMessage({
                 type: 'success',
-                text: `${result.title} has been added sucesfully`
+                text: `${result.title} has been requested successfully`
               });
               (event.target as HTMLFormElement).reset();
             }else{
