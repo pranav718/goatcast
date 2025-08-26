@@ -8,38 +8,44 @@ export async function PATCH(
   try {
     const body = await request.json();
     const { id } = await params;
-    const { isApproved } = body;
+    const { action } = body;
 
+    if(action !== 'approve'){
+      return NextResponse.json( {error: 'Invalid action'}, {status: 400});
+    }
+    
     const podcast = await prisma.podcast.update({
-      where: { id},
-      data: { isApproved }
+      where: { id: id},
+      data: { isApproved: true}
     });
 
-    return NextResponse.json(podcast);
-  } catch (error) {
-    console.error('Error updating podcast:', error);
+    return NextResponse.json({success: true, podcast});
+
+  }
+  catch(error){
+    console.error("Error approving podcast: ", error);
     return NextResponse.json(
-      { error: 'Failed to update podcast' },
-      { status: 500 }
+      {error: "Failed to approve podcast"},
+      {status: 500}
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await prisma.podcast.delete({
-      where: { id: params.id }
-    });
+  { params }: { params: Promise<{id: string}>}
+){
+  try{
+    const { id } = await params;
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting podcast:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete podcast' },
-      { status: 500 }
-    );
+    await prisma.podcast.delete({where: {id: id}});
+    return NextResponse.json({success: true});
   }
+  catch(error){
+    console.error("Error deleting podcast", error);
+    return NextResponse.json(
+      {error: 'Failed to delete podcast'},
+      {status: 500}
+    )
+  };
 }
