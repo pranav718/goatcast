@@ -30,8 +30,42 @@ export default async function GenrePage( { params }: { params: { slug: string } 
     }
 
     return (
-        <div>
-            
+        <div className= 'min-h-screen bg-[#fafafa]'>
+            <header className='bg-white border-b border-gray-200'>
+                <div className='max-w-5xl mx-auto px-8 py-6'>
+                    <Link
+                        href='/' className='text-gray-600 hover:text-gray-800 font-medium text-sm'
+                    >
+                        ← Back to GoatCast
+                    </Link>
+                </div>
+            </header>
+
+            <main className='max-w-5xl mx-auto px-8 py-12'>
+                <div className='mb-8'>
+                    <h1 className='text-3xl font-medium text-gray-900 mb-2'>{genre.name} Podcasts</h1>
+                    <div className='text-gray-600 text-sm'>{genre.podcasts.length} podcast{genre.podcasts.length == 1 ? '' : 's'} in this genre</div>
+                </div>
+
+                {genre.podcasts.length == 0 ? (
+                    <div className='bg-white border border-gray-200 p-8 text-center text-gray-600'>
+                        No podcasts in this genre yet.
+                    </div>
+                ): (
+                    <div>
+                        {genre.podcasts.map((podcast) => 
+                            <PodcastCard
+                                key = {podcast.id}
+                                id = {podcast.id}
+                                title = { podcast.title}
+                                thumbnail = {podcast.thumbnail}
+                                youtubeUrl = {podcast.youtubeUrl || undefined}
+                                />
+                            )}
+                    </div>
+                )}
+            </main>
+
         </div>
     )
 }
