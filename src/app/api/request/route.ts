@@ -33,6 +33,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const existingPodcast = await prisma.podcast.findFirst({
+      where: { youtubeUrl },
+      include: { genre: true }
+    })
+
+    if(existingPodcast){
+      const status = existingPodcast.isApproved ? 'approved' : 'pending approval'
+      return NextResponse.json(
+        {
+          error: `This podcast already exists in the ${existingPodcast.genre.name} genre and is ${status}.`
+        },
+        {status: 409}
+      )
+    }
+
     const response = await youtube.videos.list({
       part: ['snippet'],
       id: [videoId]
