@@ -34,19 +34,21 @@ export default async function HomePage() {
                 Collection of podcasts that are just goated.
               </p>
             </div>
-            <Link 
-              href="/request"
-              className="bg-gray-800 text-white px-4 py-2 text-sm font-medium border border-gray-800 hover:bg-gray-700 transition-colors"
-            >
-              Request Podcast
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">  
+              <Link 
+                href="/request"
+                className="bg-gray-800 text-white px-4 py-2 text-sm font-medium border border-gray-800 hover:bg-gray-700 transition-colors"
+              >
+                Request Podcast
+              </Link>
 
-            <Link
-              href = '/admin'
-              className = "bg-gray-800 text-white px-4 py-2 text-sm font-medium border border-gray-800 hover:bg-gray-700 transition-colors"
-            >
-              Admin
-            </Link>
+              <Link
+                href = '/admin'
+                className = "bg-gray-800 text-white px-4 py-2 text-sm font-medium border border-gray-800 hover:bg-gray-700 transition-colors"
+              >
+                Admin
+              </Link>
+            </div>
           </div>
         </div>
       </header>
