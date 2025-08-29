@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const existingPodcast = await prisma.podcast.findFirst({
-      where: { youtubeUrl },
+      where: { videoId },
       include: { genre: true }
     })
 
@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
                    video.snippet?.thumbnails?.high?.url || 
                    video.snippet?.thumbnails?.default?.url || '',
         youtubeUrl: youtubeUrl,
+        videoId: videoId,
         genreId: genreRecord.id,
         isApproved: false
       }
