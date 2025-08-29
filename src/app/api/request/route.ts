@@ -20,10 +20,18 @@ function extractVideoId(url: string): string | null {
   return null;
 }
 
+function createSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { genre, youtubeUrl, description } = body;
+    const { genre, genreName, youtubeUrl, description } = body;
 
     const videoId = extractVideoId(youtubeUrl);
     if (!videoId) {
@@ -61,17 +69,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const genreRecord = await prisma.genre.findUnique({
+    let genreRecord = await prisma.genre.findUnique({
       where: { slug: genre }
     });
-
+    
+    if (!genreRecord && genreName) {
+      const slug = createSlug(genreName);
+      
+      
+      const existingGenre = await prisma.genre.findUnique({
+        where: { slug }
+      });
+      
+      if (existingGenre) {
+        genreRecord = existingGenre;
+      } else {
+        genreRecord = await prisma.genre.create({
+          data: {
+            name: genreName,
+            slug: slug
+          }
+        });
+      }
+    }
+    
     if (!genreRecord) {
       return NextResponse.json(
         { error: 'Invalid genre' },
         { status: 400 }
       );
     }
-
+    
     const podcast = await prisma.podcast.create({
       data: {
         title: video.snippet?.title || 'Untitled',
@@ -85,13 +113,13 @@ export async function POST(request: NextRequest) {
         isApproved: false
       }
     });
-
+    
     return NextResponse.json({
       success: true,
       title: podcast.title,
-      message: 'Podcast submitted for review'
+      message: 'Podcast submitted for review',
+      newGenre: genreName ? true : false
     });
-
   } catch (error) {
     console.error('Error creating podcast request:', error);
     return NextResponse.json(
@@ -103,13 +131,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-
+    
     const podcasts = await prisma.podcast.findMany({
       where: { isApproved: false },
       include: { genre: true },
       orderBy: { createdAt: 'desc' }
     });
-
+    
     return NextResponse.json(podcasts);
   } catch (error) {
     console.error('Error fetching podcasts:', error);
