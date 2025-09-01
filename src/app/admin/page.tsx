@@ -70,6 +70,11 @@ export default function AdminDashboard() {
             setProcessingId(null);
         }
     }
+    
+    const handleLogout = async () => {
+        await fetch('/api/auth/admin', { method: 'DELETE' });
+        window.location.href = '/';
+    };
 
     if(loading){
         return (
@@ -91,6 +96,12 @@ export default function AdminDashboard() {
                         >
                             ← Back to GoatCast
                         </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="bg-red-600 text-white px-4 py-2 text-sm font-medium hover:bg-red-700 transition-colors"
+                        >
+                            Logout
+                        </button>
                     </div>
                 </div>
             </header>
