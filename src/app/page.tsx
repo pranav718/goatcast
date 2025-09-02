@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 async function getGenresWithPodcasts() {
   try{
-    return await prisma.genre.findMany({
+    const genres = await prisma.genre.findMany({
       include: {
         podcasts: {
           where: { isApproved: true },
@@ -12,19 +12,20 @@ async function getGenresWithPodcasts() {
         }
       }
     });
- }catch(error){
+    
+    return genres.filter(genre=>genre.podcasts.length > 0);
+  }catch(error){
     console.log("Error ocurred: ", error);
     return[];
- };
- 
+  };
 }
 
 export default async function HomePage() {
   const genres = await getGenresWithPodcasts();
+  const totalPodcasts = genres.reduce((acc, genre) => acc + genre.podcasts.length, 0);
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-8 py-8">
           <div className="flex justify-between items-center">
@@ -41,19 +42,19 @@ export default async function HomePage() {
               >
                 Request Podcast
               </Link>
-
               <Link
                 href = '/admin'
                 className = "bg-gray-800 text-white px-4 py-2 text-sm font-medium border border-gray-800 hover:bg-gray-700 transition-colors"
               >
                 Admin
               </Link>
-            </div>
+            </div> 
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-12">
+
+      <main className="max-w-5xl mx-auto px-8 pb-12">
         {genres.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-600 mb-4">No podcasts found. Make sure to run the seed script.</p>

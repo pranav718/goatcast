@@ -77,13 +77,12 @@ export async function POST(request: NextRequest) {
       const slug = createSlug(genreName);
       
       
-      const existingGenre = await prisma.genre.findUnique({
+      genreRecord = await prisma.genre.findUnique({
         where: { slug }
       });
       
-      if (existingGenre) {
-        genreRecord = existingGenre;
-      } else {
+      if (!genreRecord) {
+
         genreRecord = await prisma.genre.create({
           data: {
             name: genreName,

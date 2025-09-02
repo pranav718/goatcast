@@ -125,15 +125,20 @@ export default function RequestPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Genre
               </label>
+              
               <select 
-                name="genre"
-                value={selectedGenre}
-                onChange={handleGenreChange}
-                required
-                className="w-full border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
-              >
-                <option value="">Select a genre...</option>
-                
+                  name="genre"
+                  value={selectedGenre}
+                  onChange={handleGenreChange}
+                  required
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
+                >
+                  <option value="">Select a genre...</option>
+                  {[...predefinedGenres, ...additionalGenres].map(genre => (
+                    <option key={genre.value} value={genre.value}>
+                      {genre.label}
+                    </option>
+                  ))}
               </select>
               
               {customGenreName && (
