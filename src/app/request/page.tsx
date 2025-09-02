@@ -134,21 +134,6 @@ export default function RequestPage() {
               >
                 <option value="">Select a genre...</option>
                 
-                <optgroup label="Existing Genres">
-                  {predefinedGenres.map(genre => (
-                    <option key={genre.value} value={genre.value}>
-                      {genre.label}
-                    </option>
-                  ))}
-                </optgroup>
-                
-                <optgroup label="New Genres (will be created)">
-                  {additionalGenres.map(genre => (
-                    <option key={genre.value} value={genre.value}>
-                      {genre.label} 
-                    </option>
-                  ))}
-                </optgroup>
               </select>
               
               {customGenreName && (
