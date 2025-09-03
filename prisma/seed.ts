@@ -208,6 +208,14 @@ async function main() {
             videoId: "orMtwOz6Db0",
             isApproved: true,
           },
+          {
+            title: "Sean Carroll: Quantum Mechanics, Black Holes, and the Nature of Reality",
+            description: "Theoretical physicist breaks down the deepest mysteries of the universe, from quantum mechanics to the arrow of time.",
+            thumbnail: "https://img.youtube.com/vi/iNqqOLscOBY/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/iNqqOLscOBY",
+            videoId: "iNqqOLscOBY",
+            isApproved: true,
+          }
         ],
       },
     },
