@@ -52,7 +52,7 @@ export default async function GenrePage( { params }: { params: { slug: string } 
                         No podcasts in this genre yet.
                     </div>
                 ): (
-                    <div>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                         {genre.podcasts.map((podcast) => 
                             <PodcastCard
                                 key = {podcast.id}

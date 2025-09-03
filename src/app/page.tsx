@@ -24,9 +24,19 @@ export default async function HomePage() {
   const genres = await getGenresWithPodcasts();
   const totalPodcasts = genres.reduce((acc, genre) => acc + genre.podcasts.length, 0);
 
+  const allPodcasts = genres
+  .flatMap(genre => 
+    genre.podcasts.map(podcast => ({
+      ...podcast,
+      genreName: genre.name
+    }))
+  )
+  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  .slice(0, 3);
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      
+
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-8 py-6">
           <div className="flex justify-between items-center">
@@ -99,15 +109,12 @@ export default async function HomePage() {
                 </div>
                 <div className="space-y-2">
                   <p className="text-gray-400">// Latest additions</p>
-                  {genres.slice(0, 3).map((genre) => {
-                    const latestPodcast = genre.podcasts[0];
-                    return latestPodcast ? (
-                      <div key={genre.id}>
-                        <p className="text-green-400">+ [{genre.name}]</p>
-                        <p className="text-gray-300 pl-4 truncate">"{latestPodcast.title}"</p>
-                      </div>
-                    ) : null;
-                  })}
+                  {allPodcasts.map((podcast) => (
+                    <div key={podcast.id}>
+                      <p className="text-green-400">+ [{podcast.genreName}]</p>
+                      <p className="text-gray-300 pl-4 truncate">"{podcast.title}"</p>
+                    </div>
+                  ))}
                   <p className="text-gray-400 pt-2">// {totalPodcasts - 3} more...</p>
                 </div>
               </div>
@@ -155,7 +162,7 @@ export default async function HomePage() {
                 Know a goated podcast? Help us grow the collection.
               </p>
               <Link href="/request" className="text-sm text-gray-900 underline hover:no-underline">
-                Request a podcast →
+                Submit a podcast →
               </Link>
             </div>
             <div>

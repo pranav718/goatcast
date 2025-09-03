@@ -54,9 +54,9 @@ async function main() {
           {
             title: "Andrej Karpathy: Tesla Autopilot and Multi-Task Learning",
             description: "Former Tesla AI director on neural networks, autopilot, and the future of AI.",
-            thumbnail: "https://img.youtube.com/vi/IHH47nZ7FZU/maxresdefault.jpg",
-            youtubeUrl: "https://youtu.be/IHH47nZ7FZU",
-            videoId: "IHH47nZ7FZU",
+            thumbnail: "https://img.youtube.com/vi/cdiD-9MMpb0/maxresdefault.jpg",
+            youtubeUrl: "https://youtu.be/cdiD-9MMpb0",
+            videoId: "cdiD-9MMpb0",
             isApproved: true,
           },
         ],
