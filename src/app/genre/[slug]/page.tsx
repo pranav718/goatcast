@@ -22,8 +22,9 @@ async function getGenreWithPodcasts(slug: string){
     }
 }
 
-export default async function GenrePage( { params }: { params: { slug: string } }){
-    const genre = await getGenreWithPodcasts(params.slug);
+export default async function GenrePage( { params }: { params: Promise<{ slug: string }> }){
+    const promisedParams = await params;
+    const genre = await getGenreWithPodcasts(promisedParams.slug);
 
     if(!genre){
         notFound();
