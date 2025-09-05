@@ -24,14 +24,14 @@ A podcast-like platform for curated YouTube videos, built with Next.js and TypeS
 
 ## Getting Started
 
-###Prerequisites
+### Prerequisites
 
 - Node.js 18.17 or later
 - npm, yarn, or pnpm package manager
 - A MongoDB database
 - A YouTube Data API Key
 
-###Installation
+### Installation
 
 1. Clone the repository:
 ```
