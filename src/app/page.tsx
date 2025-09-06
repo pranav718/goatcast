@@ -3,21 +3,25 @@ import GenreSection from './components/GenreSection';
 import Link from 'next/link';
 
 async function getGenresWithPodcasts() {
-  try{
+  try {
     const genres = await prisma.genre.findMany({
       include: {
         podcasts: {
-          where: { isApproved: true },
-          orderBy: { createdAt: 'desc' }
+          where: { 
+            isApproved: true 
+          },
+          orderBy: { 
+            updatedAt: 'desc'
+          }
         }
       }
     });
     
-    return genres.filter(genre=>genre.podcasts.length > 0);
-  }catch(error){
-    console.log("Error ocurred: ", error);
-    return[];
-  };
+    return genres.filter(genre => genre.podcasts.length > 0);
+  } catch(error) {
+    console.log("Error occurred: ", error);
+    return [];
+  }
 }
 
 export default async function HomePage() {
@@ -31,7 +35,9 @@ export default async function HomePage() {
         genreName: genre.name
       }))
     )
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
     .slice(0, 3);
 
   return (
