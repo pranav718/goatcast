@@ -1,6 +1,7 @@
 import prisma from '../lib/prisma';
 import GenreSection from './components/GenreSection';
 import Link from 'next/link';
+export const dynamic = 'force-dynamic';
 
 async function getGenresWithPodcasts() {
   try {
