@@ -24,5 +24,7 @@ model Podcast {
   genre       Genre     @relation(fields: [genreId], references: [id])
   genreId     String    @db.ObjectId
   isApproved  Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  requestedBy  String?   
+  updatedAt    DateTime  @updatedAt 
+  createdAt    DateTime  @default(now())
 }

@@ -25,14 +25,14 @@ export default async function HomePage() {
   const totalPodcasts = genres.reduce((acc, genre) => acc + genre.podcasts.length, 0);
 
   const allPodcasts = genres
-  .flatMap(genre => 
-    genre.podcasts.map(podcast => ({
-      ...podcast,
-      genreName: genre.name
-    }))
-  )
-  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  .slice(0, 3);
+    .flatMap(genre => 
+      genre.podcasts.map(podcast => ({
+        ...podcast,
+        genreName: genre.name
+      }))
+    )
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -110,9 +110,13 @@ export default async function HomePage() {
                 <div className="space-y-2">
                   <p className="text-gray-400">// Latest additions</p>
                   {allPodcasts.map((podcast) => (
-                    <div key={podcast.id}>
-                      <p className="text-green-400">+ [{podcast.genreName}]</p>
-                      <p className="text-gray-300 pl-4 truncate">"{podcast.title}"</p>
+                    <div key={podcast.id} className="group">
+                      <div className="flex items-center gap-2">
+                        <p className="text-green-400">+ [{podcast.genreName}]</p>
+                      </div>
+                      <p className="text-gray-300 pl-4 truncate group-hover:text-white transition-colors">
+                        "{podcast.title}"
+                      </p>
                     </div>
                   ))}
                   <p className="text-gray-400 pt-2">// {totalPodcasts - 3} more...</p>
